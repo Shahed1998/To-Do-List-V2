@@ -56,6 +56,7 @@ app.post('/', (req, res) => {
 
 app.post('/signUp', (req, res) => {
   // console.log(req.body.Name.length);
+  console.log(req.body);
 
   if (req.body.submit === 'Go back') {
     res.redirect('/');

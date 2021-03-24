@@ -1,41 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/CSS/styles.css" />
-    <title>login</title>
-  </head>
-  <body>
-    <div id="<%-failureMsg -%>" class="<%-loginMsgAttr-%>"><%= loginMsg %></div>
+<%- include('partials/header') -%>
 
-    <div id="aligner">
-      <div id="aligner-in">
-        <form action="" method="post">
-          <h1 id="login-title">To Do List</h1>
-          <input
-            type="email"
-            name="email"
-            id="email"
-            placeholder="Email"
-            class="input-field"
-            autofocus
-            autocomplete="off"
-            size="30"
-          /><br /><br />
-          <input
-            type="password"
-            name="password"
-            id="password"
-            placeholder="Password"
-            class="input-field"
-            size="30"
-          /><br /><br />
-          <input type="submit" name="submit" value="Log In" class="btn" />
-          <input type="submit" name="submit" value="Sign Up" class="btn" />
-        </form>
-      </div>
-    </div>
-  </body>
-</html>
+<div id="<%-failureMsg -%>" class="<%-loginMsgAttr-%>"><%= loginMsg %></div>
+
+<div id="aligner">
+  <div id="aligner-in">
+    <form action="" method="post">
+      <h1 id="login-title">To Do List</h1>
+      <input
+        type="email"
+        name="email"
+        id="email"
+        placeholder="Email"
+        class="input-field"
+        autofocus
+        autocomplete="off"
+        size="30"
+      /><br /><br />
+      <input
+        type="password"
+        name="password"
+        id="password"
+        placeholder="Password"
+        class="input-field"
+        size="30"
+      /><br /><br />
+      <input type="submit" name="submit" value="Log In" class="btn" />
+      <input type="submit" name="submit" value="Sign Up" class="btn" />
+    </form>
+  </div>
+</div>
+
+<%- include('partials/footer') -%>
