@@ -1,20 +1,28 @@
 'use strict';
 
+// ---------------------- Declaring variables and requiring packages -------------------------------
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
 const port = process.env.PORT || 3000;
 const mongoose = require('mongoose');
+const encrypt = require('mongoose-encryption');
 let loginMsg = '';
 let userName = '';
 let loginMsgAttr = 'hidden';
 let failureMsg = 'failureMsg';
 
+// ------------------------------------ Mongoose --------------------------------------------------
+// Schemas and models
+
+// connecting to mongoose
 mongoose.connect('mongodb://localhost/ToDoListAppDBV2', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
 
+// User section for schema and model
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -34,12 +42,23 @@ const userSchema = new mongoose.Schema({
   },
 });
 
+// Secret key for encrypting user's password
+userSchema.plugin(encrypt, {
+  secret: process.env.SECRET,
+  encryptedFields: ['password'],
+});
+
 const User = mongoose.model('User', userSchema);
 
-app.set('view engine', 'ejs');
-app.use(express.static('public'));
-app.use(bodyParser.urlencoded({ extended: false }));
+// ------------------------------------ Routes --------------------------------------------------
 
+app.set('view engine', 'ejs'); // setting view engine
+app.use(express.static('public')); // setting up static files
+app.use(bodyParser.urlencoded({ extended: false })); // setting up body-parser
+
+// ------------------------------------ Get --------------------------------------------------
+
+// Home route which brings us to login page.
 app.get('/', (req, res) => {
   res.render('login', {
     loginMsg: loginMsg,
@@ -51,11 +70,12 @@ app.get('/', (req, res) => {
   failureMsg = 'failureMsg';
 });
 
+// Insert route
 app.get('/insert', (req, res) => {
   res.render('insert', { userName: userName });
-  userName = '';
 });
 
+// Sign up route
 app.get('/signUp', (req, res) => {
   res.render('signUp', {
     loginMsg: loginMsg,
@@ -67,6 +87,9 @@ app.get('/signUp', (req, res) => {
   failureMsg = 'failureMsg';
 });
 
+// ------------------------------------ Post --------------------------------------------------
+
+// Log In
 app.post('/', (req, res) => {
   if (req.body.submit === 'Log In') {
     // Login verification
@@ -95,9 +118,8 @@ app.post('/', (req, res) => {
   }
 });
 
+// Sign Up
 app.post('/signUp', (req, res) => {
-  // console.log(req.body.Name.length);
-  console.log(req.body);
   if (req.body.submit === 'Go back') {
     res.redirect('/');
   } else {
@@ -123,6 +145,7 @@ app.post('/signUp', (req, res) => {
   }
 });
 
+// listening to port
 app.listen(port, (error) => {
   if (error) throw error;
   console.log(`App running at port ${port}`);
