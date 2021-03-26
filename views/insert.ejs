@@ -1,7 +1,24 @@
 <%- include('partials/header') -%>
-<div id="nav">
-  <nav>
-    <h1>Welcome <%= userName %></h1>
-  </nav>
+
+<div id="insertMsg">Welcome <%= userName %></div>
+
+<div id="aligner">
+  <div id="aligner-in">
+    <form action="" method="post">
+      <input
+        type="text"
+        name="title"
+        id="title"
+        placeholder="Enter List Title"
+        class="input-field"
+        autofocus
+        autocomplete="off"
+        size="30"
+      /><br /><br />
+
+      <input type="submit" name="submit" value="Enter" class="btn insert-btn" />
+    </form>
+  </div>
 </div>
+
 <%- include('partials/footer') -%>

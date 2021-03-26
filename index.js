@@ -22,6 +22,21 @@ mongoose.connect('mongodb://localhost/ToDoListAppDBV2', {
   useUnifiedTopology: true,
 });
 
+// List Schema
+const listSchema = new mongoose.Schema({
+  titles: String,
+  items: [String],
+});
+
+const List = mongoose.model('List', listSchema);
+
+const list1 = new List({
+  titles: 'Hello',
+  items: ['a', 'b', 'c'],
+});
+
+// list1.save();
+
 // User section for schema and model
 const userSchema = new mongoose.Schema({
   name: {
@@ -40,6 +55,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Password field is required'],
   },
+  lists: [listSchema],
 });
 
 // Secret key for encrypting user's password
@@ -72,7 +88,21 @@ app.get('/', (req, res) => {
 
 // Insert route
 app.get('/insert', (req, res) => {
-  res.render('insert', { userName: userName });
+  if (userName === '') {
+    res.redirect('/');
+  } else {
+    User.findOne({ name: userName }, (err, foundUser) => {
+      if (err) {
+        console.log(err);
+      } else {
+        // console.log(foundUser.lists);
+        res.render('insert', {
+          userName: userName,
+          listTitles: foundUser.lists,
+        });
+      }
+    });
+  }
 });
 
 // Sign up route
@@ -85,6 +115,10 @@ app.get('/signUp', (req, res) => {
   loginMsg = '';
   loginMsgAttr = 'hidden';
   failureMsg = 'failureMsg';
+});
+
+app.get('/lists', (req, res) => {
+  res.render('lists');
 });
 
 // ------------------------------------ Post --------------------------------------------------
@@ -143,6 +177,62 @@ app.post('/signUp', (req, res) => {
       }
     });
   }
+});
+
+// Insert route
+app.post('/insert', (req, res) => {
+  // console.log(req.body);
+  // console.log(userName);
+  //---------------------------------------------------------> Need thorough checking
+  //------------------------------------------------------------------> Rectify logic
+  User.findOne({ name: userName }, (err, foundUser) => {
+    if (err) {
+      console.log(err);
+    } else {
+      // console.log(foundUser.lists);
+      if (!foundUser) {
+        res.redirect('/insert');
+      } else {
+        // console.log(foundUser);
+        //------------------------------------------> TBC
+        // Err in code beneath , need to redirect to lists
+        if (foundUser.lists.length !== 0) {
+          for (let i = 0; i < foundUser.lists.length; i++) {
+            console.log(foundUser.lists[i].titles);
+            if (foundUser.lists[i].titles !== req.body.title) {
+              console.log('List not found');
+              const listObj = new List({
+                titles: req.body.title,
+                items: ['Hello'],
+              });
+              foundUser.lists.push(listObj);
+              foundUser.save((err) => {
+                if (err) {
+                  console.log(err);
+                } else {
+                  // res.redirect('/lists');
+                }
+              });
+              // res.redirect('/lists');
+            } else {
+              console.log('Found listTitle');
+              // res.redirect('/lists');
+            }
+          }
+        } else {
+          console.log('List is empty');
+          const listObj = new List({
+            titles: req.body.title,
+            items: ['Hello'],
+          });
+          foundUser.lists.push(listObj);
+          foundUser.save();
+          res.redirect('/lists');
+        }
+      }
+    }
+  });
+  // res.redirect('/insert');
 });
 
 // listening to port
