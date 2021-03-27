@@ -12,7 +12,7 @@
 }
 #aligner {
   max-width: 100%;
-  min-height: 90vh;
+  min-height: 70vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -83,7 +83,7 @@
   font-size: large;
   height: 10vh;
   background-color: #30475e;
-  margin: 20px auto 0;
+  margin: 10px auto 0;
   padding: 10px;
   text-align: center;
   color: #fff9b0;
@@ -95,4 +95,51 @@
 
 .insert-btn {
   margin: 0 60px;
+}
+
+#all-lists {
+  text-align: center;
+  width: 95%;
+  margin: 0 auto 3px;
+  min-height: 20vh;
+  background-color: #30475e;
+  /* margin-bottom: 5px; */
+  color: #fff9b0;
+  padding: 20px;
+}
+
+#insert-all-lists-content {
+  margin-top: 20px;
+  /* background-color: #810000; */
+}
+
+ul {
+  list-style: none;
+}
+
+li a {
+  display: inline-block;
+  text-decoration: none;
+  font-size: 120%;
+  background-color: #fff9b0;
+  padding: 20px;
+  color: #30475e;
+  width: 20%;
+  margin: 0 auto;
+}
+
+#delete {
+  font-size: 100%;
+  background-color: #e84545;
+  padding: 20px;
+  color: #fff9b0;
+  width: 10%;
+  border: 1px solid #000;
+  box-shadow: 7px 7px #323232;
+  transition: 500ms all;
+}
+
+#delete:hover {
+  box-shadow: 2px 2px #000;
+  transition: 500ms all;
 }

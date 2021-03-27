@@ -179,60 +179,46 @@ app.post('/signUp', (req, res) => {
   }
 });
 
-// Insert route
+// Insert Route
 app.post('/insert', (req, res) => {
-  // console.log(req.body);
-  // console.log(userName);
-  //---------------------------------------------------------> Need thorough checking
-  //------------------------------------------------------------------> Rectify logic
-  User.findOne({ name: userName }, (err, foundUser) => {
-    if (err) {
-      console.log(err);
-    } else {
-      // console.log(foundUser.lists);
-      if (!foundUser) {
-        res.redirect('/insert');
+  // console.log(req.body.title);
+  if (req.body.title !== '') {
+    User.findOne({ name: userName }, (err, foundUser) => {
+      if (err) {
+        console.log(err);
       } else {
-        // console.log(foundUser);
-        //------------------------------------------> TBC
-        // Err in code beneath , need to redirect to lists
-        if (foundUser.lists.length !== 0) {
-          for (let i = 0; i < foundUser.lists.length; i++) {
-            console.log(foundUser.lists[i].titles);
-            if (foundUser.lists[i].titles !== req.body.title) {
-              console.log('List not found');
-              const listObj = new List({
-                titles: req.body.title,
-                items: ['Hello'],
-              });
-              foundUser.lists.push(listObj);
-              foundUser.save((err) => {
-                if (err) {
-                  console.log(err);
-                } else {
-                  // res.redirect('/lists');
-                }
-              });
-              // res.redirect('/lists');
-            } else {
-              console.log('Found listTitle');
-              // res.redirect('/lists');
-            }
-          }
+        if (!foundUser) {
+          res.redirect('/');
         } else {
-          console.log('List is empty');
+          let foundUserTitles = [];
+
           const listObj = new List({
             titles: req.body.title,
             items: ['Hello'],
           });
-          foundUser.lists.push(listObj);
-          foundUser.save();
-          res.redirect('/lists');
+
+          // console.log(foundUser.lists);
+
+          foundUser.lists.forEach((list) => {
+            foundUserTitles.push(list.titles);
+          });
+          // console.log(foundUserTitles);
+
+          if (foundUserTitles.includes(listObj.titles)) {
+            // console.log(`List found`);
+            res.redirect('/insert');
+          } else {
+            // console.log('List not found');
+            foundUser.lists.push(listObj);
+            foundUser.save();
+            res.redirect('/insert');
+          }
         }
       }
-    }
-  });
-  // res.redirect('/insert');
+    });
+  } else {
+    res.redirect('/insert');
+  }
 });
 
 // listening to port

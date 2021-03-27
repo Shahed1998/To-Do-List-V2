@@ -1,9 +1,9 @@
 <%- include('partials/header') -%>
 
-<div id="insertMsg">Welcome <%= userName %></div>
+<div id="insertMsg"> <h1> Welcome <%= userName %></h1></div>
 
 <div id="aligner">
-  <div id="aligner-in">
+  <div id=" aligner-in">
     <form action="" method="post">
       <input
         type="text"
@@ -16,9 +16,29 @@
         size="30"
       /><br /><br />
 
-      <input type="submit" name="submit" value="Enter" class="btn insert-btn" />
+      <input type="submit" name="submit" value="Enter" class="btn" />
+      <input type="submit" name="submit" value="Logout" class="btn" />
     </form>
   </div>
+</div>
+<div id="all-lists">
+  <h1>All of your lists</h1><br /><br />
+  <div id="insert-all-lists-content">
+    <ul>
+      <% for(let i=0;i<listTitles.length;i++){ %>
+        
+        <!-- <li><a href="/insert"><%= listTitles[i].titles %></a>  -->
+          <form action="" method="post">
+            <li><a href="/insert"><%= listTitles[i].titles %></a> 
+            <input type="submit" name="submit" value="Delete" id="delete" />
+          </form>
+         <!-- '/insert/:abc' -->
+        </li>
+        <br><br>
+      <% } %>
+    </ul><br><br>
+  </div>
+  
 </div>
 
 <%- include('partials/footer') -%>
