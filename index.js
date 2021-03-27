@@ -76,6 +76,7 @@ app.use(bodyParser.urlencoded({ extended: false })); // setting up body-parser
 
 // Home route which brings us to login page.
 app.get('/', (req, res) => {
+  // console.log(userName);
   res.render('login', {
     loginMsg: loginMsg,
     loginMsgAttr: loginMsgAttr,
@@ -88,6 +89,7 @@ app.get('/', (req, res) => {
 
 // Insert route
 app.get('/insert', (req, res) => {
+  // console.log(userName);
   if (userName === '') {
     res.redirect('/');
   } else {
@@ -117,13 +119,14 @@ app.get('/signUp', (req, res) => {
   failureMsg = 'failureMsg';
 });
 
-app.get('/lists', (req, res) => {
-  res.render('lists');
+app.get('/insert/:todoTitle', (req, res) => {
+  console.log(req.params.todoTitle);
+  res.render('lists', { title: req.params.todoTitle });
 });
 
 // ------------------------------------ Post --------------------------------------------------
 
-// Log In
+//----------------------------------------------------------> Log In Route
 app.post('/', (req, res) => {
   if (req.body.submit === 'Log In') {
     // Login verification
@@ -152,7 +155,7 @@ app.post('/', (req, res) => {
   }
 });
 
-// Sign Up
+//----------------------------------------------------------> Sign Up Route
 app.post('/signUp', (req, res) => {
   if (req.body.submit === 'Go back') {
     res.redirect('/');
@@ -179,44 +182,58 @@ app.post('/signUp', (req, res) => {
   }
 });
 
-// Insert Route
+//----------------------------------------------------------> Insert Route
 app.post('/insert', (req, res) => {
-  // console.log(req.body.title);
-  if (req.body.title !== '') {
-    User.findOne({ name: userName }, (err, foundUser) => {
-      if (err) {
-        console.log(err);
-      } else {
-        if (!foundUser) {
-          res.redirect('/');
+  if (req.body.submit === 'Logout') {
+    userName = '';
+    res.redirect('/');
+  } else if (req.body.submit === 'Enter') {
+    if (req.body.title !== '') {
+      User.findOne({ name: userName }, (err, foundUser) => {
+        if (err) {
+          console.log(err);
         } else {
-          let foundUserTitles = [];
-
-          const listObj = new List({
-            titles: req.body.title,
-            items: ['Hello'],
-          });
-
-          // console.log(foundUser.lists);
-
-          foundUser.lists.forEach((list) => {
-            foundUserTitles.push(list.titles);
-          });
-          // console.log(foundUserTitles);
-
-          if (foundUserTitles.includes(listObj.titles)) {
-            // console.log(`List found`);
-            res.redirect('/insert');
+          if (!foundUser) {
+            res.redirect('/');
           } else {
-            // console.log('List not found');
-            foundUser.lists.push(listObj);
-            foundUser.save();
-            res.redirect('/insert');
+            let foundUserTitles = [];
+
+            const listObj = new List({
+              titles: req.body.title,
+              items: ['Hello'],
+            });
+
+            // console.log(foundUser.lists);
+
+            foundUser.lists.forEach((list) => {
+              foundUserTitles.push(list.titles);
+            });
+            // console.log(foundUserTitles);
+
+            if (foundUserTitles.includes(listObj.titles)) {
+              // console.log(`List found`);
+              res.redirect('/insert');
+            } else {
+              // console.log('List not found');
+              foundUser.lists.push(listObj);
+              foundUser.save();
+              res.redirect('/insert');
+            }
           }
         }
-      }
-    });
+      });
+    } else {
+      res.redirect('/insert');
+    }
   } else {
+    // console.log(req.body);
+    User.updateOne(
+      { name: userName },
+      { $pull: { lists: { titles: req.body.submit } } },
+      (err, result) => {
+        // console.log(result);
+      }
+    );
     res.redirect('/insert');
   }
 });

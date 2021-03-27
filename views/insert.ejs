@@ -1,6 +1,8 @@
 <%- include('partials/header') -%>
 
-<div id="insertMsg"> <h1> Welcome <%= userName %></h1></div>
+<div id="insertMsg"> <h1> Welcome <%= userName %></div>
+
+
 
 <div id="aligner">
   <div id=" aligner-in">
@@ -22,15 +24,16 @@
   </div>
 </div>
 <div id="all-lists">
-  <h1>All of your lists</h1><br /><br />
+  <h1>All of your list titles , press to view.</h1><br /><br />
   <div id="insert-all-lists-content">
     <ul>
       <% for(let i=0;i<listTitles.length;i++){ %>
         
         <!-- <li><a href="/insert"><%= listTitles[i].titles %></a>  -->
-          <form action="" method="post">
-            <li><a href="/insert"><%= listTitles[i].titles %></a> 
-            <input type="submit" name="submit" value="Delete" id="delete" />
+          <form action="" method="post" id="list-names">
+            <li><a href="/insert/<%=listTitles[i].titles %>"><%= listTitles[i].titles %></a> 
+              <!-- <input type="submit" name="submit" value="Delete" id="delete"> -->
+              <button type="submit" name="submit" value='<%=listTitles[i].titles%>' id="delete" >Delete</button>
           </form>
          <!-- '/insert/:abc' -->
         </li>
