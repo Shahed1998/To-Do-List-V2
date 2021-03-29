@@ -1,3 +1,49 @@
 <%- include('partials/header') -%>
-<h1><%= title %></h1>
+
+<div id="lists-body">
+  
+
+  <div id="title-bar">
+    <% if(title.length >10){ %>
+    <h2><%= `${title.slice(0,5)}...` %></h2>
+    <% }else{ %>
+    <h2><%= title %> <% } %></h1>
+  </div>
+  <div id="lists-form">
+
+
+    <form action="" method="post">
+      <div id="unorderedList">
+        <% for(i=1;i<listPageLists.length;i++){ %>
+          <input type="checkbox" name="listCheckBox" value="<%=listPageLists[i] %>" id="listsCheckBox" onChange="this.form.submit()">
+          <label for="listsCheckBox"><%= listPageLists[i] %></label><br><br>
+        <% } %>
+    </div>
+    </form>
+
+
+
+    <form action="" method="post">
+      <input
+        type="text"
+        name="inputtedValue"
+        id=""
+        class="lists-input-field"
+        placeholder="Add items"
+      />
+      <input type="submit" name="submit" value="+" class="lists-btn" />
+    </form>
+  </div>
+  <form action="" method="post">
+    <button
+      type="submit"
+      name="submit"
+      value="insertPage"
+      class="lists-btn listsGoBackBtn"
+    >
+      Go Back
+    </button>
+  </form>
+</div>
+
 <%- include('partials/header') -%>

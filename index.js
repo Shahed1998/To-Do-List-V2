@@ -12,6 +12,8 @@ let loginMsg = '';
 let userName = '';
 let loginMsgAttr = 'hidden';
 let failureMsg = 'failureMsg';
+let listPageLists = '';
+// let inputtedValue = '';
 
 // ------------------------------------ Mongoose --------------------------------------------------
 // Schemas and models
@@ -120,8 +122,40 @@ app.get('/signUp', (req, res) => {
 });
 
 app.get('/insert/:todoTitle', (req, res) => {
-  console.log(req.params.todoTitle);
-  res.render('lists', { title: req.params.todoTitle });
+  // console.log(userName);
+  // console.log(req.params.todoTitle);
+
+  User.findOne({ name: userName }, (err, foundUser) => {
+    if (err) {
+      console.log(err);
+    } else {
+      if (!foundUser) {
+        res.redirect('/');
+      } else {
+        // console.log(...foundUser.lists);
+        foundUser.lists.forEach((list) => {
+          // console.log(list.titles);
+          // console.log(req.body.params);
+          if (list.titles === req.params.todoTitle) {
+            listPageLists = list.items;
+            res.render('lists', {
+              title: req.params.todoTitle,
+              user: userName,
+              listPageLists: listPageLists,
+            });
+          }
+        });
+      }
+    }
+
+    // res.render('lists', {
+    //   title: req.params.todoTitle,
+    //   user: userName,
+    //   listPageLists: listPageLists,
+    // });
+  });
+
+  // console.log(req.params.todoTitle);
 });
 
 // ------------------------------------ Post --------------------------------------------------
@@ -235,6 +269,43 @@ app.post('/insert', (req, res) => {
       }
     );
     res.redirect('/insert');
+  }
+});
+
+//----------------------------------------------------------> List's Route
+
+app.post('/insert/:todoTitle', (req, res) => {
+  console.log(req.body);
+
+  // console.log(inputtedValue);
+  if (req.body.submit === '+') {
+    if (req.body.inputtedValue === '') {
+      res.redirect(`/insert/${req.params.todoTitle}`);
+    } else {
+      User.findOne({ name: userName }, (err, foundUser) => {
+        if (err) {
+          console.log(err);
+        } else {
+          if (!foundUser) {
+            userName = '';
+            res.redirect('/');
+          } else {
+            foundUser.lists.forEach((list) => {
+              if (list.titles === req.params.todoTitle) {
+                // console.log(list.items);
+                list.items.push(req.body.inputtedValue);
+                foundUser.save();
+                listPageLists = list.items;
+                res.redirect(`/insert/${req.params.todoTitle}`);
+              }
+            });
+          }
+        }
+      });
+    }
+  } else if (req.body.submit === 'insertPage') {
+    res.redirect('/insert');
+  } else {
   }
 });
 

@@ -27,7 +27,7 @@
   <h1>All of your list titles , press to view.</h1><br /><br />
   <div id="insert-all-lists-content">
     <ul>
-      <% for(let i=0;i<listTitles.length;i++){ %>
+      <% for(let i=listTitles.length-1;i>=0;i--){ %>
         
         <!-- <li><a href="/insert"><%= listTitles[i].titles %></a>  -->
           <form action="" method="post" id="list-names">
