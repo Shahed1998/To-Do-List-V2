@@ -324,7 +324,7 @@ app.post('/insert/:todoTitle', (req, res) => {
           console.log(err);
         } else {
           console.log(results);
-          res.redirect('/insert');
+          res.redirect(`/insert/${req.params.todoTitle}`);
         }
       }
     );

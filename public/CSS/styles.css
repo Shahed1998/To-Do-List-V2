@@ -99,7 +99,7 @@
 
 #all-lists {
   text-align: center;
-  width: 95%;
+  width: 100%;
   margin: 0 auto 3px;
   min-height: 20vh;
   background-color: #30475e;
@@ -215,4 +215,33 @@ li a {
   margin-top: 2rem;
   margin-left: 1rem;
   color: #30475e;
+}
+
+/* --------------------------------------Media Queries------------------------------------------- */
+@media only screen and (max-width: 1200px) {
+  li a {
+    width: 80%;
+  }
+
+  #delete {
+    width: 70%;
+  }
+
+  #lists-body {
+    width: 90%;
+    min-height: 100vh;
+    margin: 10vh auto 0;
+  }
+
+  #title-bar {
+    width: 60%;
+  }
+
+  #lists-form {
+    min-height: 20vh;
+  }
+
+  .listsGoBackBtn {
+    width: 60%;
+  }
 }
