@@ -306,6 +306,21 @@ app.post('/insert/:todoTitle', (req, res) => {
   } else if (req.body.submit === 'insertPage') {
     res.redirect('/insert');
   } else {
+    // --------------------------------------------------> Here the code of checkbox deletion will happen
+    User.updateOne(
+      { name: userName },
+      {
+        $pull: { 'lists.$[].items': req.body.listCheckBox },
+      },
+      (err, results) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(results);
+          res.redirect('/insert');
+        }
+      }
+    );
   }
 });
 
