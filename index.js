@@ -232,6 +232,7 @@ app.post('/insert', (req, res) => {
     res.redirect('/');
   } else if (req.body.submit === 'Enter') {
     if (req.body.title !== '') {
+      // console.log(req.body.title);
       User.findOne({ name: userName }, (err, foundUser) => {
         if (err) {
           console.log(err);
