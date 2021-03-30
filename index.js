@@ -19,10 +19,19 @@ let listPageLists = '';
 // Schemas and models
 
 // connecting to mongoose
-mongoose.connect('mongodb://localhost/ToDoListAppDBV2', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+// ToDoListAppDBV2
+// shahed768
+// console.log(process.env.PASSWORD);
+// console.log(password);
+
+const password = process.env.PASSWORD;
+mongoose.connect(
+  `mongodb+srv://admin-Shahed:${password}@test.6q7bm.mongodb.net/ToDoListAppDBV2?retryWrites=true&w=majority`,
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  }
+);
 
 // List Schema
 const listSchema = new mongoose.Schema({
