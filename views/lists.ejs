@@ -14,9 +14,9 @@
 
     <form action="" method="post">
       <div id="unorderedList">
-        <% for(i=1;i<listPageLists.length;i++){ %>
-          <input type="checkbox" name="listCheckBox" value="<%=listPageLists[i] %>" id="listsCheckBox" onChange="this.form.submit()">
-          <label for="listsCheckBox"><%= listPageLists[i] %></label><br><br>
+        <% for(i=0;i<listPageLists.length;i++){ %>
+          <input type="checkbox" name="listCheckBox" value="<%=listPageLists[i]._id %>" id="listsCheckBox" onChange="this.form.submit()">
+          <label for="listsCheckBox"><%= listPageLists[i].item %></label><br><br>
         <% } %>
     </div>
     </form>

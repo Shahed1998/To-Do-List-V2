@@ -27,15 +27,15 @@ mongoose.connect('mongodb://localhost/ToDoListAppDBV2', {
 // List Schema
 const listSchema = new mongoose.Schema({
   titles: String,
-  items: [String],
+  items: [{ item: String }],
 });
 
 const List = mongoose.model('List', listSchema);
 
-const list1 = new List({
-  titles: 'Hello',
-  items: ['a', 'b', 'c'],
-});
+// const list1 = new List({
+//   titles: 'Hello',
+//   items: [{ item: 'a' }, { item: 'b' }],
+// });
 
 // list1.save();
 
@@ -293,7 +293,10 @@ app.post('/insert/:todoTitle', (req, res) => {
             foundUser.lists.forEach((list) => {
               if (list.titles === req.params.todoTitle) {
                 // console.log(list.items);
-                list.items.push(req.body.inputtedValue);
+                //   items: [{ item: 'a' }, { item: 'b' }],
+
+                // const inputtedValue = { item: req.body.inputtedValue };
+                list.items.push({ item: req.body.inputtedValue });
                 foundUser.save();
                 listPageLists = list.items;
                 res.redirect(`/insert/${req.params.todoTitle}`);
@@ -307,11 +310,15 @@ app.post('/insert/:todoTitle', (req, res) => {
     res.redirect('/insert');
   } else {
     // --------------------------------------------------> Here the code of checkbox deletion will happen
+    console.log(req.body);
     User.updateOne(
-      { name: userName },
       {
-        $pull: { 'lists.$[].items': req.body.listCheckBox },
+        name: userName,
       },
+      {
+        $pull: { 'lists.$[].items': { _id: req.body.listCheckBox } },
+      },
+
       (err, results) => {
         if (err) {
           console.log(err);
