@@ -16,7 +16,6 @@ const secret = process.env.SECRET;
 
 const getRouteFunc = function (route, renderPage) {
   app.get(`/${route}`, (req, res) => {
-    // attrSetFunc('signup');
     res.render(`${renderPage}`, {
       loginMsg: loginMsg,
       loginMsgAttr: loginMsgAttr,
@@ -96,7 +95,7 @@ app.use(bodyParser.urlencoded({ extended: false })); // setting up body-parser
 
 //----------------------------------------------------------> Sign Up
 
-getRouteFunc('signup', 'signup');
+getRouteFunc('signUp', 'signUp');
 
 //----------------------------------------------------------> Log In
 
