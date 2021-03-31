@@ -2,29 +2,45 @@
 
 // ---------------------- Declaring variables and requiring packages -------------------------------
 require('dotenv').config();
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
 const port = process.env.PORT || 3000;
 const mongoose = require('mongoose');
 const encrypt = require('mongoose-encryption');
+const password = process.env.PASSWORD;
+const secret = process.env.SECRET;
+
+//----------------------------------------------------------> Functions
+
+const getRouteFunc = function (route, renderPage) {
+  app.get(`/${route}`, (req, res) => {
+    // attrSetFunc('signup');
+    res.render(`${renderPage}`, {
+      loginMsg: loginMsg,
+      loginMsgAttr: loginMsgAttr,
+      failureMsg: failureMsg,
+    });
+    attrResetFunc();
+  });
+};
+
+const attrResetFunc = function () {
+  loginMsg = '';
+  loginMsgAttr = 'hidden';
+  failureMsg = 'failureMsg';
+};
+
 let loginMsg = '';
 let userName = '';
 let loginMsgAttr = 'hidden';
 let failureMsg = 'failureMsg';
 let listPageLists = '';
-// let inputtedValue = '';
 
 // ------------------------------------ Mongoose --------------------------------------------------
 // Schemas and models
 
-// connecting to mongoose
-// ToDoListAppDBV2
-// shahed768
-// console.log(process.env.PASSWORD);
-// console.log(password);
-
-const password = process.env.PASSWORD;
 mongoose.connect(
   `mongodb+srv://admin-Shahed:${password}@test.6q7bm.mongodb.net/ToDoListAppDBV2?retryWrites=true&w=majority`,
   {
@@ -33,7 +49,7 @@ mongoose.connect(
   }
 );
 
-// List Schema
+//----------------------------------------------------------> List Schema & Model
 const listSchema = new mongoose.Schema({
   titles: String,
   items: [{ item: String }],
@@ -41,14 +57,7 @@ const listSchema = new mongoose.Schema({
 
 const List = mongoose.model('List', listSchema);
 
-// const list1 = new List({
-//   titles: 'Hello',
-//   items: [{ item: 'a' }, { item: 'b' }],
-// });
-
-// list1.save();
-
-// User section for schema and model
+//----------------------------------------------------------> User Schema & Model
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -69,9 +78,9 @@ const userSchema = new mongoose.Schema({
   lists: [listSchema],
 });
 
-// Secret key for encrypting user's password
+//----------------------------------------------------------> Code for encrypting password
 userSchema.plugin(encrypt, {
-  secret: process.env.SECRET,
+  secret: secret,
   encryptedFields: ['password'],
 });
 
@@ -83,24 +92,18 @@ app.set('view engine', 'ejs'); // setting view engine
 app.use(express.static('public')); // setting up static files
 app.use(bodyParser.urlencoded({ extended: false })); // setting up body-parser
 
-// ------------------------------------ Get --------------------------------------------------
+// ------------------------------------ Get ------------------------------------------------------
 
-// Home route which brings us to login page.
-app.get('/', (req, res) => {
-  // console.log(userName);
-  res.render('login', {
-    loginMsg: loginMsg,
-    loginMsgAttr: loginMsgAttr,
-    failureMsg: failureMsg,
-  });
-  loginMsg = '';
-  loginMsgAttr = 'hidden';
-  failureMsg = 'failureMsg';
-});
+//----------------------------------------------------------> Sign Up
 
-// Insert route
+getRouteFunc('signup', 'signup');
+
+//----------------------------------------------------------> Log In
+
+getRouteFunc('', 'login');
+
+//----------------------------------------------------------> Insert
 app.get('/insert', (req, res) => {
-  // console.log(userName);
   if (userName === '') {
     res.redirect('/');
   } else {
@@ -118,22 +121,8 @@ app.get('/insert', (req, res) => {
   }
 });
 
-// Sign up route
-app.get('/signUp', (req, res) => {
-  res.render('signUp', {
-    loginMsg: loginMsg,
-    loginMsgAttr: loginMsgAttr,
-    failureMsg: failureMsg,
-  });
-  loginMsg = '';
-  loginMsgAttr = 'hidden';
-  failureMsg = 'failureMsg';
-});
-
+//----------------------------------------------------------> Insert with parameter
 app.get('/insert/:todoTitle', (req, res) => {
-  // console.log(userName);
-  // console.log(req.params.todoTitle);
-
   User.findOne({ name: userName }, (err, foundUser) => {
     if (err) {
       console.log(err);
@@ -141,10 +130,7 @@ app.get('/insert/:todoTitle', (req, res) => {
       if (!foundUser) {
         res.redirect('/');
       } else {
-        // console.log(...foundUser.lists);
         foundUser.lists.forEach((list) => {
-          // console.log(list.titles);
-          // console.log(req.body.params);
           if (list.titles === req.params.todoTitle) {
             listPageLists = list.items;
             res.render('lists', {
@@ -156,15 +142,7 @@ app.get('/insert/:todoTitle', (req, res) => {
         });
       }
     }
-
-    // res.render('lists', {
-    //   title: req.params.todoTitle,
-    //   user: userName,
-    //   listPageLists: listPageLists,
-    // });
   });
-
-  // console.log(req.params.todoTitle);
 });
 
 // ------------------------------------ Post --------------------------------------------------
