@@ -12,6 +12,12 @@ const encrypt = require('mongoose-encryption');
 const password = process.env.PASSWORD;
 const secret = process.env.SECRET;
 
+let loginMsg = '';
+let userName = '';
+let loginMsgAttr = 'hidden';
+let failureMsg = 'failureMsg';
+let listPageLists = '';
+
 //----------------------------------------------------------> Functions
 
 const getRouteFunc = function (route, renderPage) {
@@ -31,11 +37,10 @@ const attrResetFunc = function () {
   failureMsg = 'failureMsg';
 };
 
-let loginMsg = '';
-let userName = '';
-let loginMsgAttr = 'hidden';
-let failureMsg = 'failureMsg';
-let listPageLists = '';
+const postMsgAndAttr = function () {
+  loginMsg = 'Failed to log in.';
+  loginMsgAttr = '';
+};
 
 // ------------------------------------ Mongoose --------------------------------------------------
 // Schemas and models
@@ -60,19 +65,15 @@ const List = mongoose.model('List', listSchema);
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, 'Name field is required'],
+    required: true,
   },
   email: {
     type: String,
-    required: [true, 'Email field is required'],
-    minLength: [
-      5,
-      'Minimum length must be equal or greater than 5 characters.',
-    ],
+    required: true,
   },
   password: {
     type: String,
-    required: [true, 'Password field is required'],
+    required: true,
   },
   lists: [listSchema],
 });
@@ -110,7 +111,6 @@ app.get('/insert', (req, res) => {
       if (err) {
         console.log(err);
       } else {
-        // console.log(foundUser.lists);
         res.render('insert', {
           userName: userName,
           listTitles: foundUser.lists,
@@ -146,35 +146,6 @@ app.get('/insert/:todoTitle', (req, res) => {
 
 // ------------------------------------ Post --------------------------------------------------
 
-//----------------------------------------------------------> Log In Route
-app.post('/', (req, res) => {
-  if (req.body.submit === 'Log In') {
-    // Login verification
-    User.findOne({ email: req.body.email }, (err, foundUser) => {
-      if (!err) {
-        if (!foundUser) {
-          loginMsg = 'Failed to log in.';
-          loginMsgAttr = '';
-          res.redirect('/');
-        } else {
-          if (foundUser.password === req.body.password) {
-            userName = foundUser.name;
-            res.redirect('/insert');
-          } else {
-            loginMsg = 'Failed to log in.';
-            loginMsgAttr = '';
-            res.redirect('/');
-          }
-        }
-      } else {
-        console.log(err);
-      }
-    });
-  } else {
-    res.redirect('/signUp');
-  }
-});
-
 //----------------------------------------------------------> Sign Up Route
 app.post('/signUp', (req, res) => {
   if (req.body.submit === 'Go back') {
@@ -202,6 +173,34 @@ app.post('/signUp', (req, res) => {
   }
 });
 
+//----------------------------------------------------------> Log In Route
+app.post('/', (req, res) => {
+  if (req.body.submit === 'Log In') {
+    // Login verification
+    User.findOne({ email: req.body.email }, (err, foundUser) => {
+      if (!err) {
+        if (!foundUser) {
+          postMsgAndAttr();
+          res.redirect('/');
+        } else {
+          if (foundUser.password === req.body.password) {
+            userName = foundUser.name;
+            res.redirect('/insert');
+          } else {
+            postMsgAndAttr();
+            res.redirect('/');
+          }
+        }
+      } else {
+        postMsgAndAttr();
+        res.redirect('/');
+      }
+    });
+  } else {
+    res.redirect('/signUp');
+  }
+});
+
 //----------------------------------------------------------> Insert Route
 app.post('/insert', (req, res) => {
   if (req.body.submit === 'Logout') {
@@ -209,7 +208,6 @@ app.post('/insert', (req, res) => {
     res.redirect('/');
   } else if (req.body.submit === 'Enter') {
     if (req.body.title !== '') {
-      // console.log(req.body.title);
       User.findOne({ name: userName }, (err, foundUser) => {
         if (err) {
           console.log(err);
@@ -224,18 +222,13 @@ app.post('/insert', (req, res) => {
               items: ['Hello'],
             });
 
-            // console.log(foundUser.lists);
-
             foundUser.lists.forEach((list) => {
               foundUserTitles.push(list.titles);
             });
-            // console.log(foundUserTitles);
 
             if (foundUserTitles.includes(listObj.titles)) {
-              // console.log(`List found`);
               res.redirect('/insert');
             } else {
-              // console.log('List not found');
               foundUser.lists.push(listObj);
               foundUser.save();
               res.redirect('/insert');
@@ -247,13 +240,10 @@ app.post('/insert', (req, res) => {
       res.redirect('/insert');
     }
   } else {
-    // console.log(req.body);
     User.updateOne(
       { name: userName },
       { $pull: { lists: { titles: req.body.submit } } },
-      (err, result) => {
-        // console.log(result);
-      }
+      (err, result) => {}
     );
     res.redirect('/insert');
   }
@@ -264,7 +254,6 @@ app.post('/insert', (req, res) => {
 app.post('/insert/:todoTitle', (req, res) => {
   console.log(req.body);
 
-  // console.log(inputtedValue);
   if (req.body.submit === '+') {
     if (req.body.inputtedValue === '') {
       res.redirect(`/insert/${req.params.todoTitle}`);
@@ -279,10 +268,6 @@ app.post('/insert/:todoTitle', (req, res) => {
           } else {
             foundUser.lists.forEach((list) => {
               if (list.titles === req.params.todoTitle) {
-                // console.log(list.items);
-                //   items: [{ item: 'a' }, { item: 'b' }],
-
-                // const inputtedValue = { item: req.body.inputtedValue };
                 list.items.push({ item: req.body.inputtedValue });
                 foundUser.save();
                 listPageLists = list.items;
@@ -310,7 +295,6 @@ app.post('/insert/:todoTitle', (req, res) => {
         if (err) {
           console.log(err);
         } else {
-          console.log(results);
           res.redirect(`/insert/${req.params.todoTitle}`);
         }
       }
